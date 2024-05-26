@@ -7,6 +7,7 @@ namespace CofyEngine
     {
         public abstract TStateId id { get; }
 
+        public virtual void _Awake() {}
         public virtual void _Start() { }
         
         public virtual void _Update(double delta) {}

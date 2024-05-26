@@ -1,8 +1,7 @@
-using System;
 using CofyEngine;
 using UnityEngine;
 
-public class TopDownController : MonoBehaviour
+public class TopDownController : MonoState<PlayerState>
 {
     [SerializeField] private float movespeed = 50;
     [SerializeField] private float rotateSpeed = 100;
@@ -13,22 +12,33 @@ public class TopDownController : MonoBehaviour
     private Vector2 _input;
     private Quaternion _rotation;
 
-    private void Awake()
+    public override PlayerState id => PlayerState.Movement;
+    protected internal override void StartContext(MonoStateMachine<PlayerState> sm, object param)
     {
+    }
+
+    public override void _Awake()
+    {
+        base._Awake();
+        
         _mainCamera = Camera.main;
         _rb = GetComponent<Rigidbody>();
     }
 
-    private void Update()
+    public override void _Update(double delta)
     {
+        base._Update(delta);
+        
         var xAxis = Input.GetAxis("Horizontal");
         var yAxis = Input.GetAxis("Vertical");
 
         _input =  new Vector2(xAxis, yAxis);
     }
 
-    private void FixedUpdate()
+    public override void _FixedUpdate(double fixedDelta)
     {
+        base._FixedUpdate(fixedDelta);
+        
         if (_input != Vector2.zero)
         {
             var cameraRotation = Quaternion.Euler(0, _mainCamera.transform.eulerAngles.y, 0);

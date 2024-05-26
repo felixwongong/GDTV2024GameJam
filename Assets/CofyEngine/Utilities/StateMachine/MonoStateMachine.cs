@@ -30,6 +30,7 @@ namespace CofyEngine
             for (var i = 0; i < states.Length; i++)
             {
                 RegisterState(states[i]);
+                states[i]._Awake();
             }
         }
 

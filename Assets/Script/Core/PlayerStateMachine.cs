@@ -10,7 +10,7 @@ public class PlayerStateMachine: MonoStateMachine<PlayerState>
 {
     void Start()
     {
-        
+        GoToState(PlayerState.Movement);
     }
 
     void Update()
