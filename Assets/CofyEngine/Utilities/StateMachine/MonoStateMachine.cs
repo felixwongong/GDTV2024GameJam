@@ -90,7 +90,7 @@ namespace CofyEngine
 
         public void GoToStateNoRepeat(TStateId id, in object param = null)
         {
-            if (currentState.id.Equals(id))
+            if (!currentState.id.Equals(id))
                 GoToState(id, param);
         }
 

@@ -46,6 +46,10 @@ public class TopDownController : MonoState<PlayerState>
 
             _rotation = cameraRotation * inputRotation;
         }
+        else
+        {
+            _rb.velocity = Vector3.zero;
+        }
         
         _rb.rotation = Quaternion.RotateTowards(_rb.rotation, _rotation, rotateSpeed * Time.fixedDeltaTime).normalized;
         _rb.velocity = transform.forward * (_input.magnitude * movespeed);

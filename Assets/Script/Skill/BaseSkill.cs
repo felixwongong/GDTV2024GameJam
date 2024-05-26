@@ -49,7 +49,8 @@ using UnityEngine;
 
 		private void playVfxOn(ParticleSystem vfx, AxialCoord coord, AxialTilemapData mapData) {
 			if(!mapData.tryGetTile(coord, out var tile)) return;
-			
+
+			FLog.Log("Playing vfx");
 			vfx.transform.position = tile.transform.position;
 			vfx.Play();
 		}
