@@ -97,6 +97,22 @@ public static class AxialCoordExtension
 		};
 	}
 
+	public static Vector3Int oddr(this AxialCoord coord)
+	{
+		return AxialCoord.AxialToOddR(coord);
+	}
+
+	public static AxialCoord axial(this Vector2Int oddr)
+	{
+		AxialCoord.OddRToAxial(oddr.x, oddr.y, out var axial);
+		return axial;
+	}
+
+	public static Vector2Int xy(this Vector3Int vec3)
+	{
+		return new Vector2Int(vec3.x, vec3.y);
+	}
+	
 	public static AxialCoord rotate60(this AxialCoord coord)
 	{
 		return new AxialCoord(-coord.r, coord.q + coord.r);
