@@ -12,9 +12,4 @@ public class PlayerStateMachine: MonoStateMachine<PlayerState>
     {
         GoToState(PlayerState.Movement);
     }
-
-    void Update()
-    {
-        
-    }
 }

@@ -24,7 +24,7 @@ namespace CofyEngine
         public CofyEvent<StateChangeRecord<TStateId>> onBeforeStateChange = new();
         public CofyEvent<StateChangeRecord<TStateId>> onAfterStateChange = new();
 
-        private void Awake()
+        protected virtual void Awake()
         {
             var states = GetComponents<MonoState<TStateId>>();
             for (var i = 0; i < states.Length; i++)
@@ -34,7 +34,7 @@ namespace CofyEngine
             }
         }
 
-        private void Start()
+        protected virtual void Start()
         {
             foreach (var (_, state) in _stateDictionary)
             {
@@ -42,7 +42,7 @@ namespace CofyEngine
             }
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             if (_curState != null)
             {
