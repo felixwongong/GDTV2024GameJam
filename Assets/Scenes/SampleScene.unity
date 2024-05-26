@@ -16624,6 +16624,55 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84a1803e09fab464da7c0c61982428c1, type: 3}
+--- !u!1 &1289726648
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1289726649}
+  - component: {fileID: 1289726650}
+  m_Layer: 0
+  m_Name: AttackSkill
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1289726649
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1289726648}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1289726650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1289726648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2a373438f7f4554995ecadc9ae22887, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _emitVfxPrefab: {fileID: 725748389856807712, guid: 4bda94453d2ca7444a0fff05b2d425f5, type: 3}
+  _hitVfxPrefab: {fileID: 0}
+  effectArea: {fileID: 11400000, guid: a5e6a80c6d2f97d4984fab63bf7ae8f2, type: 2}
+  hitUnitType: 0
+  scaledDuration: 0
 --- !u!4 &1290087319 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3270353498295843063, guid: 84a1803e09fab464da7c0c61982428c1, type: 3}
@@ -23606,7 +23655,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a623feea41ed084fb53dafa84a1c4f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _grid: {fileID: 1683263145}
+  _tilemap: {fileID: 0}
 --- !u!4 &1798203184 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3270353498295843063, guid: 84a1803e09fab464da7c0c61982428c1, type: 3}
@@ -27531,3 +27580,4 @@ SceneRoots:
   - {fileID: 782259216}
   - {fileID: 1555935623}
   - {fileID: 1797380743}
+  - {fileID: 1289726649}
