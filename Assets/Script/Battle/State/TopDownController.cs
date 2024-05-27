@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using CofyEngine;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ public class TopDownController : MonoState<PlayerState>
 {
     [SerializeField] private float movespeed = 50;
     [SerializeField] private float rotateSpeed = 100;
+    [SerializeField] private Transform detector;
 
     [Header("State")] 
     [SerializeField] private bool movable = true;
@@ -17,6 +19,8 @@ public class TopDownController : MonoState<PlayerState>
     private Quaternion _rotation;
 
     public override PlayerState id => PlayerState.Movement;
+    public PlayerStateMachine psm => (PlayerStateMachine)stateMachine;
+    
     protected internal override void StartContext(object param)
     {
     }
@@ -56,17 +60,16 @@ public class TopDownController : MonoState<PlayerState>
         }
         
         _rb.rotation = Quaternion.RotateTowards(_rb.rotation, _rotation, rotateSpeed * Time.fixedDeltaTime).normalized;
-        _rb.velocity = transform.forward * (_input.magnitude * movespeed);
-    }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        var go = collision.gameObject;
-        var tile = go.GetComponentInParent<HexTile>();
-        Debug.Log(tile);
-        if (tile == null) return;
-        var playerSM = (PlayerStateMachine)stateMachine;
-        movable = tile.team == UnitTeam.None || tile.team == playerSM.attachedUnit.team;
-        Debug.Log(movable);
+        Ray ray = new Ray(detector.position, _rb.transform.forward);
+        var hits = Physics.SphereCastAll(ray, 0.2f, 0.1f);
+        if (hits.Any(hit => hit.collider.name != psm.attachedUnit.team.ToString() && hit.collider.name != UnitTeam.None.ToString()))
+        {
+            _rb.velocity = Vector3.zero;
+        }
+        else
+        {
+            _rb.velocity = transform.forward * (_input.magnitude * movespeed);
+        }
     }
 }
