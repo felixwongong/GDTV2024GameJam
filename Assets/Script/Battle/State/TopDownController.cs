@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
 using CofyEngine;
+using CofyEngine.Network;
+using Unity.Netcode;
 using UnityEngine;
 
-public class TopDownController : MonoState<PlayerState>
+public class TopDownController : NetworkState<PlayerState>
 {
     [SerializeField] private float movespeed = 50;
     [SerializeField] private float rotateSpeed = 100;
@@ -15,6 +17,7 @@ public class TopDownController : MonoState<PlayerState>
     private Camera _mainCamera;
     private Rigidbody _rb;
 
+    [SerializeField]
     private Vector2 _input;
     private Quaternion _rotation;
 
@@ -37,6 +40,8 @@ public class TopDownController : MonoState<PlayerState>
     {
         base._Update(delta);
         
+        if(!IsOwner) return;
+        
         var xAxis = Input.GetAxis("Horizontal");
         var yAxis = Input.GetAxis("Vertical");
 
@@ -47,6 +52,8 @@ public class TopDownController : MonoState<PlayerState>
     {
         base._FixedUpdate(fixedDelta);
         
+        Vector3 _velocity;
+        
         if (_input != Vector2.zero)
         {
             var cameraRotation = Quaternion.Euler(0, _mainCamera.transform.eulerAngles.y, 0);
@@ -56,20 +63,30 @@ public class TopDownController : MonoState<PlayerState>
         }
         else
         {
-            _rb.velocity = Vector3.zero;
+            _velocity = Vector3.zero;
+            updateRigidBodyRpc(_velocity, _rotation);
+            return;
         }
         
-        _rb.rotation = Quaternion.RotateTowards(_rb.rotation, _rotation, rotateSpeed * Time.fixedDeltaTime).normalized;
-
         Ray ray = new Ray(detector.position, _rb.transform.forward);
         var hits = Physics.SphereCastAll(ray, 0.2f, 0.1f);
         if (hits.Any(hit => hit.collider.name != psm.attachedUnit.team.ToString() && hit.collider.name != UnitTeam.None.ToString()))
         {
-            _rb.velocity = Vector3.zero;
+            _velocity = Vector3.zero;
         }
         else
         {
-            _rb.velocity = transform.forward * (_input.magnitude * movespeed);
+            _velocity = transform.forward * (_input.magnitude * movespeed);
         }
+        
+        updateRigidBodyRpc(_velocity, _rotation);
+    }
+
+    [Rpc(SendTo.Server)]
+    void updateRigidBodyRpc(Vector3 velocity, Quaternion rotation)
+    {
+        _rb.rotation = Quaternion.RotateTowards(_rb.rotation, rotation, rotateSpeed * Time.fixedDeltaTime).normalized;
+        _rb.velocity = velocity;
+        Debug.Log(velocity);
     }
 }

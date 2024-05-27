@@ -1,9 +1,10 @@
 ﻿using CofyEngine;
+using CofyEngine.Network;
 using UnityEngine;
 
 namespace Otter.MonsterChess.Core.State
 {
-    public class ExecuteSkill: MonoState<PlayerState>
+    public class ExecuteSkill: NetworkState<PlayerState>
     {
         public override PlayerState id => PlayerState.ExecuteSkill;
         protected internal override void StartContext(object param)
