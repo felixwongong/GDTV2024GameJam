@@ -18,7 +18,7 @@ namespace Otter.MonsterChess.Core.State
             {
                 skill.execute(new SkillExecutionRequest()
                 {
-                    caster = null,
+                    caster = playerSM.attachedUnit,
                     direction = AxialCoord.Top,
                     mapData = TileManager.instance._tilemapData,
                     triggerPosition = TileManager.instance.tilemap.WorldToCell(skill.transform.position).xy().axial()

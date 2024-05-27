@@ -21,7 +21,6 @@ using UnityEngine;
 		[Tooltip("VFX play on all unit with targetUnitType in area")]
 		[SerializeField] private ParticleSystem _hitVfxPrefab;
 		[SerializeField] private AxialArea effectArea;
-		[SerializeField] protected UnitType hitUnitType;
 		[SerializeField] private float scaledDuration;
 		
 		public SkillStatus execute(SkillExecutionRequest req)
@@ -35,7 +34,15 @@ using UnityEngine;
 
 				if (_emitVfxPrefab != null) playVfxOn(getVfx(_emitVfxPrefab), area[i], req.mapData);
 
-				_execute(req);
+				var singleReq = new SkillExecutionRequest()
+				{
+					caster = req.caster,
+					direction = req.direction,
+					mapData = req.mapData,
+					triggerPosition = area[i],
+				};
+				
+				_executeCellInArea(singleReq);
 				if (_hitVfxPrefab != null) playVfxOn(getVfx(_hitVfxPrefab), area[i], req.mapData);
 			}
 
@@ -45,7 +52,7 @@ using UnityEngine;
 			};
 		}
         
-		protected abstract void _execute(SkillExecutionRequest req);
+		protected abstract void _executeCellInArea(SkillExecutionRequest req);
 
 		private void playVfxOn(ParticleSystem vfx, AxialCoord coord, AxialTilemapData mapData) {
 			if(!mapData.tryGetTile(coord, out var tile)) return;
