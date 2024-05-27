@@ -5,6 +5,8 @@ namespace CofyEngine
 {
     public abstract class MonoState<TStateId>: MonoBehaviour where TStateId: Enum
     {
+        protected internal MonoStateMachine<TStateId> stateMachine;
+
         public abstract TStateId id { get; }
 
         public virtual void _Awake() {}
@@ -14,7 +16,7 @@ namespace CofyEngine
 
         public virtual void _FixedUpdate(double fixedDelta) { }
 
-        protected internal abstract void StartContext(MonoStateMachine<TStateId> sm, object param);
+        protected internal abstract void StartContext(object param);
 
         protected internal virtual void OnEndContext()
         {

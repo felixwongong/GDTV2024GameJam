@@ -1,3 +1,4 @@
+using System;
 using CofyEngine;
 using UnityEngine;
 
@@ -6,6 +7,9 @@ public class TopDownController : MonoState<PlayerState>
     [SerializeField] private float movespeed = 50;
     [SerializeField] private float rotateSpeed = 100;
 
+    [Header("State")] 
+    [SerializeField] private bool movable = true;
+
     private Camera _mainCamera;
     private Rigidbody _rb;
 
@@ -13,7 +17,7 @@ public class TopDownController : MonoState<PlayerState>
     private Quaternion _rotation;
 
     public override PlayerState id => PlayerState.Movement;
-    protected internal override void StartContext(MonoStateMachine<PlayerState> sm, object param)
+    protected internal override void StartContext(object param)
     {
     }
 
@@ -53,5 +57,16 @@ public class TopDownController : MonoState<PlayerState>
         
         _rb.rotation = Quaternion.RotateTowards(_rb.rotation, _rotation, rotateSpeed * Time.fixedDeltaTime).normalized;
         _rb.velocity = transform.forward * (_input.magnitude * movespeed);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        var go = collision.gameObject;
+        var tile = go.GetComponentInParent<HexTile>();
+        Debug.Log(tile);
+        if (tile == null) return;
+        var playerSM = (PlayerStateMachine)stateMachine;
+        movable = tile.team == UnitTeam.None || tile.team == playerSM.attachedUnit.team;
+        Debug.Log(movable);
     }
 }

@@ -10174,6 +10174,7 @@ GameObject:
   - component: {fileID: 782259219}
   - component: {fileID: 782259217}
   - component: {fileID: 782259220}
+  - component: {fileID: 782259221}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -10250,6 +10251,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ac1b6a1496de4433aa7389507abb671, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _attachedUnit: {fileID: 782259221}
   skill: {fileID: 589568684575484226, guid: b5bb52ab55233ca47943cb1236cda33d, type: 3}
 --- !u!114 &782259220
 MonoBehaviour:
@@ -10263,6 +10265,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45878bf8eac842e9b0e85a855e01f7f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &782259221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 782259214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be055cd18f5b4c1b9c2edc406b02f04d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: cat
+  team: 2
 --- !u!4 &782323602 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3270353498295843063, guid: 84a1803e09fab464da7c0c61982428c1, type: 3}

@@ -68,6 +68,8 @@ namespace CofyEngine
 
             FLog.Log($"Register state {state.id}");
             _stateDictionary[state.id] = state;
+
+            state.stateMachine = this;
         }
 
         public void GoToState(TStateId id, in object param = null)
@@ -83,7 +85,7 @@ namespace CofyEngine
 
             onBeforeStateChange?.Invoke(new StateChangeRecord<TStateId>()
                 { oldState = _prevoutState, newState = _curState });
-            _curState.StartContext(this, param);
+            _curState.StartContext(param);
             onAfterStateChange?.Invoke(new StateChangeRecord<TStateId>()
                 { oldState = _prevoutState, newState = _curState });
         }

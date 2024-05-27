@@ -8,6 +8,7 @@ public class HexTile : MonoBehaviour
     [SerializeField] private List<GameObject> tiles;
 
     private Unit occupiedUnit;
+    public UnitTeam team => _team;
 
     private void Start()
     {

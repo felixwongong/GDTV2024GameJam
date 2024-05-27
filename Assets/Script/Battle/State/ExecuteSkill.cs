@@ -6,9 +6,9 @@ namespace Otter.MonsterChess.Core.State
     public class ExecuteSkill: MonoState<PlayerState>
     {
         public override PlayerState id => PlayerState.ExecuteSkill;
-        protected internal override void StartContext(MonoStateMachine<PlayerState> sm, object param)
+        protected internal override void StartContext(object param)
         {
-            var playerSM = (PlayerStateMachine)sm;
+            var playerSM = (PlayerStateMachine)stateMachine;
 
             var skill = Instantiate(playerSM.skill, transform.position, Quaternion.identity);
 
@@ -26,7 +26,7 @@ namespace Otter.MonsterChess.Core.State
                 Destroy(skill.gameObject);
             });
 
-            sm.GoToState(PlayerState.Movement);
+            stateMachine.GoToState(PlayerState.Movement);
         }
     }
 }
