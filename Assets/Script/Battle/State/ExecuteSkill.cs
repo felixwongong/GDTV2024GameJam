@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace Otter.MonsterChess.Core.State
 {
-    public class ExecuteSkill: NetworkState<PlayerState>
+    public class ExecuteSkill: PlayerState
     {
-        public override PlayerState id => PlayerState.ExecuteSkill;
+        public override PlayerStateId id => PlayerStateId.ExecuteSkill;
         protected override void StartContext()
         {
             var playerSM = (PlayerStateMachine)stateMachine;
@@ -27,7 +27,7 @@ namespace Otter.MonsterChess.Core.State
                 Destroy(skill.gameObject);
             });
 
-            stateMachine.GoToStateServerRpc(PlayerState.Movement);
+            stateMachine.GoToState(PlayerStateId.Movement);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace CofyEngine.Network
     [RequireComponent(typeof(NetworkObject))]
     public abstract class NetworkState<TStateId>: NetworkBehaviour where TStateId: Enum
     {
-        protected internal NetworkStateMachine<TStateId> stateMachine;
+        protected internal IStateMachine<TStateId> stateMachine;
 
         public abstract TStateId id { get; }
 
@@ -24,15 +24,10 @@ namespace CofyEngine.Network
         {
             StartContext();
         }
+
         protected abstract void StartContext();
 
-        [Rpc(SendTo.ClientsAndHost)]
-        protected internal void OnEndContextClientRpc()
-        {
-            OnEndContext();
-        }
-
-        protected virtual void OnEndContext()
+        protected internal virtual void OnEndContext()
         {
             
         }

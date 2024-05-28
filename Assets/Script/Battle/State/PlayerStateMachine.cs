@@ -2,13 +2,18 @@ using CofyEngine.Network;
 using Unity.Netcode;
 using UnityEngine;
 
-public enum PlayerState
+public enum PlayerStateId
 {
     Movement,
     ExecuteSkill
 }
 
-public class PlayerStateMachine: NetworkStateMachine<PlayerState>
+public abstract class PlayerState : NetworkState<PlayerStateId>
+{
+    
+}
+
+public class PlayerStateMachine: NetworkStateMachine<PlayerStateId, PlayerState>
 {
     [SerializeField] private Unit _attachedUnit;
     public NetworkVariable<int> id;
@@ -41,7 +46,7 @@ public class PlayerStateMachine: NetworkStateMachine<PlayerState>
     [Rpc(SendTo.ClientsAndHost)]
     void GoToMoveRpc()
     {
-        GoToStateServerRpc(PlayerState.Movement);
+        GoToState(PlayerStateId.Movement);
     }
 
     protected override void Update()
@@ -49,7 +54,7 @@ public class PlayerStateMachine: NetworkStateMachine<PlayerState>
         base.Update();
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            GoToStateNoRepeatServerRpc(PlayerState.ExecuteSkill);
+            GoToStateNoRepeat(PlayerStateId.ExecuteSkill);
         }
     }
 }

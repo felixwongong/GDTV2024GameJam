@@ -1,9 +1,8 @@
 using System.Linq;
-using CofyEngine.Network;
 using Unity.Netcode;
 using UnityEngine;
 
-public class TopDownController : NetworkState<PlayerState>
+public class TopDownController : PlayerState
 {
     [SerializeField] private float movespeed = 50;
     [SerializeField] private float rotateSpeed = 100;
@@ -19,11 +18,12 @@ public class TopDownController : NetworkState<PlayerState>
     private Vector2 _input;
     private Quaternion _rotation;
 
-    public override PlayerState id => PlayerState.Movement;
+    public override PlayerStateId id => PlayerStateId.Movement;
     public PlayerStateMachine psm => (PlayerStateMachine)stateMachine;
     
     protected override void StartContext()
     {
+        Debug.Log("Start movement state");
     }
 
     public override void _Awake()
@@ -49,20 +49,24 @@ public class TopDownController : NetworkState<PlayerState>
     public override void _FixedUpdate(double fixedDelta)
     {
         base._FixedUpdate(fixedDelta);
-        
+        handleInputServerRpc(_input);
+    }
+
+    [Rpc(SendTo.Server)]
+    private void handleInputServerRpc(Vector2 input)
+    {
         Vector3 _velocity;
         
-        if (_input != Vector2.zero)
+        if (input != Vector2.zero)
         {
             var cameraRotation = Quaternion.Euler(0, _mainCamera.transform.eulerAngles.y, 0);
-            var inputRotation = Quaternion.LookRotation(new Vector3(_input.x, 0, _input.y), transform.up);
+            var inputRotation = Quaternion.LookRotation(new Vector3(input.x, 0, input.y), transform.up);
 
             _rotation = cameraRotation * inputRotation;
         }
         else
         {
-            _velocity = Vector3.zero;
-            updateRigidBodyRpc(_velocity, _rotation);
+            _rb.velocity = Vector3.zero;
             return;
         }
         
@@ -74,17 +78,10 @@ public class TopDownController : NetworkState<PlayerState>
         }
         else
         {
-            _velocity = transform.forward * (_input.magnitude * movespeed);
+            _velocity = transform.forward * (input.magnitude * movespeed);
         }
         
-        updateRigidBodyRpc(_velocity, _rotation);
-    }
-
-    [Rpc(SendTo.Server)]
-    void updateRigidBodyRpc(Vector3 velocity, Quaternion rotation)
-    {
-        _rb.rotation = Quaternion.RotateTowards(_rb.rotation, rotation, rotateSpeed * Time.fixedDeltaTime).normalized;
-        _rb.velocity = velocity;
-        Debug.Log(velocity);
+        _rb.velocity = _velocity;
+        _rb.rotation = _rotation;   
     }
 }

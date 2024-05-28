@@ -6,30 +6,49 @@ using UnityEngine;
 
 namespace CofyEngine.Network
 {
+    public interface IStateMachine<TStateId> where TStateId : Enum
+    {
+        public void GoToState(TStateId id);
+        public void GoToStateNoRepeat(TStateId id);
+    }
+    
     [GenerateSerializationForGenericParameter(0)]
     [RequireComponent(typeof(NetworkObject))]
-   public abstract class NetworkStateMachine<TStateId> : NetworkBehaviour where TStateId : Enum
+   public abstract class NetworkStateMachine<TStateId, TState> : NetworkBehaviour, IStateMachine<TStateId> where TStateId : Enum where TState: NetworkState<TStateId>
     {
-        public struct StateChangeRecord<TStateId> where TStateId : Enum
+        public struct StateChangeRecord
         {
             public TStateId oldState;
             public TStateId newState;
         }
 
-        private NetworkState<TStateId> _prevoutState;
-        private NetworkState<TStateId> _currentState;
-        public NetworkState<TStateId> previousState => _prevoutState;
-        public NetworkState<TStateId> currentState => _currentState;
+        public NetworkVariable<TStateId> currentStateId;
+        private TState _prevoutState;
+        private TState _currentState;
+        public TState previousState => _prevoutState;
 
-        private Dictionary<TStateId, NetworkState<TStateId>> _stateDictionary = new();
+        public TState currentState
+        {
+            get
+            {
+                if (_currentState == null || !_currentState.id.Equals(currentStateId.Value))
+                {
+                    _currentState = GetState(currentStateId.Value);
+                }
+
+                return _currentState;
+            }
+        }
+
+        private Dictionary<TStateId, TState> _stateDictionary = new();
 
 
-        public CofyEvent<StateChangeRecord<TStateId>> onBeforeStateChange = new();
-        public CofyEvent<StateChangeRecord<TStateId>> onAfterStateChange = new();
+        public CofyEvent<StateChangeRecord> onBeforeStateChange = new();
+        public CofyEvent<StateChangeRecord> onAfterStateChange = new();
 
         protected virtual void Awake()
         {
-            var states = GetComponents<NetworkState<TStateId>>();
+            var states = GetComponents<TState>();
             for (var i = 0; i < states.Length; i++)
             {
                 RegisterState(states[i]);
@@ -61,7 +80,7 @@ namespace CofyEngine.Network
             }
         }
 
-        public void RegisterState(NetworkState<TStateId> state)
+        public void RegisterState(TState state)
         {
             if (state == null) throw new ArgumentNullException(nameof(state));
             if (_stateDictionary.ContainsKey(state.id))
@@ -75,36 +94,51 @@ namespace CofyEngine.Network
             state.stateMachine = this;
         }
 
-        [Rpc(SendTo.Server)]
-        public void GoToStateServerRpc(TStateId id)
+        public void GoToState(TStateId id)
         {
-            if (!_currentState.isRefNull())
+            GoToStateServerRpc(id);
+        } 
+        
+        [Rpc(SendTo.Server)]
+        private void GoToStateServerRpc(TStateId id)
+        {
+            if (!currentState.isRefNull())
             {
-                _currentState.OnEndContextClientRpc();
-                _prevoutState = _currentState;
+                changeStateClientRpc(id);
             }
 
-            if (!_stateDictionary.TryGetValue(id, out _currentState))
-                throw new Exception(string.Format("State {0} not registered", id));
-
+            currentStateId.Value = GetState(id).id;
             if(_prevoutState != null)
                 invokeBeforeStateChangeEventRpc(_prevoutState.id, currentState.id);
-            _currentState.StartContextClientRpc();
+            currentState.StartContextClientRpc();
             if(_prevoutState != null)
                 invokeAfterStateChangeEventRpc(_prevoutState.id, currentState.id);
         }
 
-        [Rpc(SendTo.Server)]
-        public void GoToStateNoRepeatServerRpc(TStateId id)
+
+        public void GoToStateNoRepeat(TStateId id)
         {
-            if (!currentState.id.Equals(id))
-                GoToStateServerRpc(id);
+            GoToStateNoRepeatServerRpc(id);
+        }
+        
+        [Rpc(SendTo.Server)]
+        private void GoToStateNoRepeatServerRpc(TStateId id)
+        {
+            if (!_currentState.id.Equals(id))
+                GoToState(id);
         }
 
         [Rpc(SendTo.ClientsAndHost)]
+        private void changeStateClientRpc(TStateId nextStateId)
+        {
+            _currentState.OnEndContext();
+            _prevoutState = _currentState;
+        }
+        
+        [Rpc(SendTo.ClientsAndHost)]
         private void invokeBeforeStateChangeEventRpc(TStateId prevousSteteId, TStateId nextStateId)
         {
-            onBeforeStateChange?.Invoke(new StateChangeRecord<TStateId>()
+            onBeforeStateChange?.Invoke(new StateChangeRecord()
             {
                 oldState = prevousSteteId, newState = nextStateId
             });
@@ -113,21 +147,20 @@ namespace CofyEngine.Network
         [Rpc(SendTo.ClientsAndHost)]
         private void invokeAfterStateChangeEventRpc(TStateId prevousSteteId, TStateId nextStateId)
         {
-            onAfterStateChange?.Invoke(new StateChangeRecord<TStateId>()
+            onAfterStateChange?.Invoke(new StateChangeRecord()
             {
                 oldState = prevousSteteId, newState = nextStateId
             });
         }
 
-        public T GetState<T>(TStateId id) where T : NetworkState<TStateId>
+        public TState GetState(TStateId id)
         {
             if (!_stateDictionary.ContainsKey(id))
             {
-                throw new Exception($"State {typeof(T)} not registered");
+                throw new Exception($"State {id.ToString()} not registered");
             }
 
-            return (T)_stateDictionary[id];
+            return _stateDictionary[id];
         }
     }
-
 }
