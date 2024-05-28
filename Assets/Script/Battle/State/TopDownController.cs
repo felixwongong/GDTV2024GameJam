@@ -1,4 +1,6 @@
+using System;
 using System.Linq;
+using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -16,7 +18,8 @@ public class TopDownController : PlayerState
 
     [SerializeField]
     private Vector2 _input;
-    private Quaternion _rotation;
+    private Vector3 _velocity;
+    private Quaternion _rotation = quaternion.identity;
 
     public override PlayerStateId id => PlayerStateId.Movement;
     public PlayerStateMachine psm => (PlayerStateMachine)stateMachine;
@@ -44,11 +47,8 @@ public class TopDownController : PlayerState
         var yAxis = Input.GetAxis("Vertical");
 
         _input =  new Vector2(xAxis, yAxis);
-    }
-
-    public override void _FixedUpdate(double fixedDelta)
-    {
-        base._FixedUpdate(fixedDelta);
+        
+        Debug.Log($"velocity: {_rb.velocity}, input: {_input}");
         handleInputServerRpc(_input);
     }
 
@@ -66,7 +66,7 @@ public class TopDownController : PlayerState
         }
         else
         {
-            _rb.velocity = Vector3.zero;
+            this._velocity = Vector3.zero;
             return;
         }
         
@@ -81,7 +81,16 @@ public class TopDownController : PlayerState
             _velocity = transform.forward * (input.magnitude * movespeed);
         }
         
-        _rb.velocity = _velocity;
-        _rb.rotation = _rotation;   
+        this._velocity = _velocity;
+        Debug.Log($"isOwner: {IsOwner}, velocity: {_velocity}");
+    }
+
+    private void FixedUpdate()
+    {
+        if (IsServer)
+        {
+            if(_rotation != quaternion.identity) _rb.rotation = _rotation;
+            _rb.velocity = _velocity;
+        }
     }
 }

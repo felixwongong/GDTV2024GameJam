@@ -22,10 +22,23 @@ namespace CofyEngine.Network
             public TStateId newState;
         }
 
+        public NetworkVariable<TStateId> previousStateId;
         public NetworkVariable<TStateId> currentStateId;
-        private TState _prevoutState;
+        private TState _previousState;
         private TState _currentState;
-        public TState previousState => _prevoutState;
+
+        public TState previousState
+        {
+            get
+            {
+                if (_previousState == null || !_previousState.id.Equals(previousStateId.Value))
+                {
+                    _previousState = GetState(previousStateId.Value);
+                }
+
+                return _previousState;
+            }
+        }
 
         public TState currentState
         {
@@ -66,17 +79,17 @@ namespace CofyEngine.Network
 
         protected virtual void Update()
         {
-            if (_currentState != null)
+            if (currentState != null)
             {
-                _currentState._Update(Time.deltaTime);
+                currentState._Update(Time.deltaTime);
             }
         }
 
         private void FixedUpdate()
         {
-            if (_currentState != null)
+            if (currentState != null)
             {
-                _currentState._FixedUpdate(Time.fixedDeltaTime);
+                currentState._FixedUpdate(Time.fixedDeltaTime);
             }
         }
 
@@ -104,15 +117,16 @@ namespace CofyEngine.Network
         {
             if (!currentState.isRefNull())
             {
-                changeStateClientRpc(id);
+                currentState.OnEndContextClientRpc();
+                previousStateId.Value = currentState.id;
             }
 
             currentStateId.Value = GetState(id).id;
-            if(_prevoutState != null)
-                invokeBeforeStateChangeEventRpc(_prevoutState.id, currentState.id);
+            if(previousState != null)
+                invokeBeforeStateChangeEventRpc(previousState.id, currentState.id);
             currentState.StartContextClientRpc();
-            if(_prevoutState != null)
-                invokeAfterStateChangeEventRpc(_prevoutState.id, currentState.id);
+            if(previousState != null)
+                invokeAfterStateChangeEventRpc(previousState.id, currentState.id);
         }
 
 
@@ -124,15 +138,8 @@ namespace CofyEngine.Network
         [Rpc(SendTo.Server)]
         private void GoToStateNoRepeatServerRpc(TStateId id)
         {
-            if (!_currentState.id.Equals(id))
+            if (!currentState.id.Equals(id))
                 GoToState(id);
-        }
-
-        [Rpc(SendTo.ClientsAndHost)]
-        private void changeStateClientRpc(TStateId nextStateId)
-        {
-            _currentState.OnEndContext();
-            _prevoutState = _currentState;
         }
         
         [Rpc(SendTo.ClientsAndHost)]

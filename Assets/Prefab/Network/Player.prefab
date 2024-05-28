@@ -256,7 +256,7 @@ GameObject:
   - component: {fileID: 8820065778872043462}
   - component: {fileID: 831903693024505467}
   - component: {fileID: -5196307467147899639}
-  - component: {fileID: -8313956915386459328}
+  - component: {fileID: -8710781607996785795}
   - component: {fileID: 8436216157114926967}
   - component: {fileID: 2216835497356279114}
   - component: {fileID: 6320604022962580192}
@@ -324,7 +324,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3008193508
+  GlobalObjectIdHash: 1884698501
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -364,7 +364,7 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
---- !u!114 &-8313956915386459328
+--- !u!114 &-8710781607996785795
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -388,6 +388,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ac1b6a1496de4433aa7389507abb671, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  previousStateId:
+    m_InternalValue: 0
+  currentStateId:
+    m_InternalValue: 0
   _attachedUnit: {fileID: 8220378019673397924}
   id:
     m_InternalValue: 0

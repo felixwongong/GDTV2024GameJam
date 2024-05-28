@@ -35,6 +35,6 @@ public class BattleController : NetworkBehaviour
 
     public Transform getSpawnPosition(int id)
     {
-        return spawnPositions[id];
+        return spawnPositions[id % spawnPositions.Length];
     }
 }

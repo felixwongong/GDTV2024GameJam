@@ -20,14 +20,20 @@ namespace CofyEngine.Network
         public virtual void _FixedUpdate(double fixedDelta) { }
 
         [Rpc(SendTo.ClientsAndHost)]
-        protected internal  void StartContextClientRpc()
+        protected internal void StartContextClientRpc()
         {
             StartContext();
         }
 
         protected abstract void StartContext();
 
-        protected internal virtual void OnEndContext()
+        [Rpc(SendTo.ClientsAndHost)]
+        protected internal void OnEndContextClientRpc()
+        {
+            OnEndContext();
+        }
+        
+        private protected virtual void OnEndContext()
         {
             
         }
