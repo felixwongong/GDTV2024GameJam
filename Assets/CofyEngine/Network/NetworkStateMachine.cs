@@ -6,18 +6,20 @@ using UnityEngine;
 
 namespace CofyEngine.Network
 {
+    [GenerateSerializationForGenericParameter(0)]
+    [RequireComponent(typeof(NetworkObject))]
    public abstract class NetworkStateMachine<TStateId> : NetworkBehaviour where TStateId : Enum
     {
         public struct StateChangeRecord<TStateId> where TStateId : Enum
         {
-            public NetworkState<TStateId> oldState;
-            public NetworkState<TStateId> newState;
+            public TStateId oldState;
+            public TStateId newState;
         }
 
         private NetworkState<TStateId> _prevoutState;
-        private NetworkState<TStateId> _curState;
+        private NetworkState<TStateId> _currentState;
         public NetworkState<TStateId> previousState => _prevoutState;
-        public NetworkState<TStateId> currentState => _curState;
+        public NetworkState<TStateId> currentState => _currentState;
 
         private Dictionary<TStateId, NetworkState<TStateId>> _stateDictionary = new();
 
@@ -45,17 +47,17 @@ namespace CofyEngine.Network
 
         protected virtual void Update()
         {
-            if (_curState != null)
+            if (_currentState != null)
             {
-                _curState._Update(Time.deltaTime);
+                _currentState._Update(Time.deltaTime);
             }
         }
 
         private void FixedUpdate()
         {
-            if (_curState != null)
+            if (_currentState != null)
             {
-                _curState._FixedUpdate(Time.fixedDeltaTime);
+                _currentState._FixedUpdate(Time.fixedDeltaTime);
             }
         }
 
@@ -73,28 +75,48 @@ namespace CofyEngine.Network
             state.stateMachine = this;
         }
 
-        public void GoToState(TStateId id, in object param = null)
+        [Rpc(SendTo.Server)]
+        public void GoToStateServerRpc(TStateId id)
         {
-            if (!_curState.isRefNull())
+            if (!_currentState.isRefNull())
             {
-                _curState.OnEndContext();
-                _prevoutState = _curState;
+                _currentState.OnEndContextClientRpc();
+                _prevoutState = _currentState;
             }
 
-            if (!_stateDictionary.TryGetValue(id, out _curState))
+            if (!_stateDictionary.TryGetValue(id, out _currentState))
                 throw new Exception(string.Format("State {0} not registered", id));
 
-            onBeforeStateChange?.Invoke(new StateChangeRecord<TStateId>()
-                { oldState = _prevoutState, newState = _curState });
-            _curState.StartContext(param);
-            onAfterStateChange?.Invoke(new StateChangeRecord<TStateId>()
-                { oldState = _prevoutState, newState = _curState });
+            if(_prevoutState != null)
+                invokeBeforeStateChangeEventRpc(_prevoutState.id, currentState.id);
+            _currentState.StartContextClientRpc();
+            if(_prevoutState != null)
+                invokeAfterStateChangeEventRpc(_prevoutState.id, currentState.id);
         }
 
-        public void GoToStateNoRepeat(TStateId id, in object param = null)
+        [Rpc(SendTo.Server)]
+        public void GoToStateNoRepeatServerRpc(TStateId id)
         {
             if (!currentState.id.Equals(id))
-                GoToState(id, param);
+                GoToStateServerRpc(id);
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void invokeBeforeStateChangeEventRpc(TStateId prevousSteteId, TStateId nextStateId)
+        {
+            onBeforeStateChange?.Invoke(new StateChangeRecord<TStateId>()
+            {
+                oldState = prevousSteteId, newState = nextStateId
+            });
+        }
+        
+        [Rpc(SendTo.ClientsAndHost)]
+        private void invokeAfterStateChangeEventRpc(TStateId prevousSteteId, TStateId nextStateId)
+        {
+            onAfterStateChange?.Invoke(new StateChangeRecord<TStateId>()
+            {
+                oldState = prevousSteteId, newState = nextStateId
+            });
         }
 
         public T GetState<T>(TStateId id) where T : NetworkState<TStateId>

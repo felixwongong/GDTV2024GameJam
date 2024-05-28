@@ -7,7 +7,7 @@ namespace Otter.MonsterChess.Core.State
     public class ExecuteSkill: NetworkState<PlayerState>
     {
         public override PlayerState id => PlayerState.ExecuteSkill;
-        protected internal override void StartContext(object param)
+        protected override void StartContext()
         {
             var playerSM = (PlayerStateMachine)stateMachine;
 
@@ -27,7 +27,7 @@ namespace Otter.MonsterChess.Core.State
                 Destroy(skill.gameObject);
             });
 
-            stateMachine.GoToState(PlayerState.Movement);
+            stateMachine.GoToStateServerRpc(PlayerState.Movement);
         }
     }
 }

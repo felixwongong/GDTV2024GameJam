@@ -1,6 +1,4 @@
-using System;
 using System.Linq;
-using CofyEngine;
 using CofyEngine.Network;
 using Unity.Netcode;
 using UnityEngine;
@@ -24,7 +22,7 @@ public class TopDownController : NetworkState<PlayerState>
     public override PlayerState id => PlayerState.Movement;
     public PlayerStateMachine psm => (PlayerStateMachine)stateMachine;
     
-    protected internal override void StartContext(object param)
+    protected override void StartContext()
     {
     }
 

@@ -1,8 +1,11 @@
 ﻿using System;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace CofyEngine.Network
 {
+    [GenerateSerializationForGenericParameter(0)]
+    [RequireComponent(typeof(NetworkObject))]
     public abstract class NetworkState<TStateId>: NetworkBehaviour where TStateId: Enum
     {
         protected internal NetworkStateMachine<TStateId> stateMachine;
@@ -16,10 +19,22 @@ namespace CofyEngine.Network
 
         public virtual void _FixedUpdate(double fixedDelta) { }
 
-        protected internal abstract void StartContext(object param);
-
-        protected internal virtual void OnEndContext()
+        [Rpc(SendTo.ClientsAndHost)]
+        protected internal  void StartContextClientRpc()
         {
+            StartContext();
+        }
+        protected abstract void StartContext();
+
+        [Rpc(SendTo.ClientsAndHost)]
+        protected internal void OnEndContextClientRpc()
+        {
+            OnEndContext();
+        }
+
+        protected virtual void OnEndContext()
+        {
+            
         }
     }
 }

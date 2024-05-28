@@ -1,4 +1,3 @@
-using CofyEngine;
 using CofyEngine.Network;
 using Unity.Netcode;
 using UnityEngine;
@@ -42,7 +41,7 @@ public class PlayerStateMachine: NetworkStateMachine<PlayerState>
     [Rpc(SendTo.ClientsAndHost)]
     void GoToMoveRpc()
     {
-        GoToState(PlayerState.Movement);
+        GoToStateServerRpc(PlayerState.Movement);
     }
 
     protected override void Update()
@@ -50,7 +49,7 @@ public class PlayerStateMachine: NetworkStateMachine<PlayerState>
         base.Update();
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            GoToStateNoRepeat(PlayerState.ExecuteSkill);
+            GoToStateNoRepeatServerRpc(PlayerState.ExecuteSkill);
         }
     }
 }
