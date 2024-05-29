@@ -2,8 +2,8 @@
 {
     protected override void _executeCellInArea(SkillExecutionRequest req)
     {
-        req.mapData.tryGetTile(req.triggerPosition, out var tile);
+        TileManager.instance._tilemapData.tryGetTile(req.triggerPosition, out var tile);
         
-        tile.occupyBy(req.caster);
+        tile.occupyBy(req.casterId);
     }
 }

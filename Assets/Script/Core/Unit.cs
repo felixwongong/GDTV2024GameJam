@@ -20,6 +20,7 @@ public class Unit : NetworkBehaviour
     {
         id = Random.Range(0, 100);
         _psm = GetComponent<PlayerStateMachine>();
+        BattleController.instance.registerUnit(this);
     }
 
     private void Start()

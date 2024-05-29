@@ -18,9 +18,8 @@ namespace Otter.MonsterChess.Core.State
             {
                 skill.execute(new SkillExecutionRequest()
                 {
-                    caster = playerSM.attachedUnit,
+                    casterId = playerSM.attachedUnit.id,
                     direction = AxialCoord.Top,
-                    mapData = TileManager.instance._tilemapData,
                     triggerPosition = TileManager.instance.tilemap.WorldToCell(skill.transform.position).xy().axial()
                 });
                 Destroy(skill.gameObject);

@@ -22,8 +22,9 @@ public class HexTile : MonoBehaviour
         changeTeam(UnitTeam.None, UnitTeam.None);
     }
 
-    public void occupyBy(Unit unit)
+    public void occupyBy(int unitId)
     {
+        var unit = BattleController.instance.unitMap[unitId];
         changeTeam(occupiedUnit != null ? occupiedUnit.team : UnitTeam.None, unit.team);
         this.occupiedUnit = unit;
     }

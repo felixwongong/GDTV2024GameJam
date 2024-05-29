@@ -12,6 +12,9 @@ public class BattleController : NetworkBehaviour
     [SerializeField]
     private NetworkVariable<int> idGenerator = new();
 
+    private Dictionary<int, Unit> _unitMap = new();
+    public IReadOnlyDictionary<int, Unit> unitMap => _unitMap;
+
     public int generateId
     {
         get
@@ -36,5 +39,10 @@ public class BattleController : NetworkBehaviour
     public Transform getSpawnPosition(int id)
     {
         return spawnPositions[id % spawnPositions.Length];
+    }
+
+    public void registerUnit(Unit unit)
+    {
+        _unitMap.Add(unit.id, unit);
     }
 }

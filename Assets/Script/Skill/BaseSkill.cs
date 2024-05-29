@@ -9,9 +9,8 @@ using UnityEngine;
 
 	public struct SkillExecutionRequest
 	{
-		public Unit caster;
+		public int casterId;
 		public AxialCoord triggerPosition;
-		public AxialTilemapData mapData;
 		public AxialCoord direction;
 	}
 	
@@ -25,25 +24,26 @@ using UnityEngine;
 		
 		public SkillStatus execute(SkillExecutionRequest req)
 		{
+			var mapData = TileManager.instance._tilemapData;
+			
 			AxialCoord[] area;
             area = effectArea.getArea(req.triggerPosition, req.direction);
 			
 			for (var i = 0; i < area.Length; i++)
 			{
-				if (!req.mapData.tryGetTile(area[i], out var tile)) continue;
+				if (!mapData.tryGetTile(area[i], out var tile)) continue;
 
-				if (_emitVfxPrefab != null) playVfxOn(getVfx(_emitVfxPrefab), area[i], req.mapData);
+				if (_emitVfxPrefab != null) playVfxOn(getVfx(_emitVfxPrefab), area[i], mapData);
 
 				var singleReq = new SkillExecutionRequest()
 				{
-					caster = req.caster,
+					casterId = req.casterId,
 					direction = req.direction,
-					mapData = req.mapData,
 					triggerPosition = area[i],
 				};
 				
 				_executeCellInArea(singleReq);
-				if (_hitVfxPrefab != null) playVfxOn(getVfx(_hitVfxPrefab), area[i], req.mapData);
+				if (_hitVfxPrefab != null) playVfxOn(getVfx(_hitVfxPrefab), area[i], mapData);
 			}
 
 			return new SkillStatus()
