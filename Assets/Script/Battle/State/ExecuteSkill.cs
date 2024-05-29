@@ -1,5 +1,4 @@
 ﻿using CofyEngine;
-using CofyEngine.Network;
 using UnityEngine;
 
 namespace Otter.MonsterChess.Core.State
