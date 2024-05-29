@@ -4,7 +4,7 @@ using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
 
-public class TopDownController : PlayerState
+public class TopDownMovement : PlayerState
 {
     [SerializeField] private float movespeed = 50;
     [SerializeField] private float rotateSpeed = 100;
@@ -16,8 +16,6 @@ public class TopDownController : PlayerState
     private Camera _mainCamera;
     private Rigidbody _rb;
 
-    [SerializeField]
-    private Vector2 _input;
     private Vector3 _velocity;
     private Quaternion _rotation = quaternion.identity;
 
@@ -43,13 +41,7 @@ public class TopDownController : PlayerState
         
         if(!IsOwner) return;
         
-        var xAxis = Input.GetAxis("Horizontal");
-        var yAxis = Input.GetAxis("Vertical");
-
-        _input =  new Vector2(xAxis, yAxis);
-        
-        Debug.Log($"velocity: {_rb.velocity}, input: {_input}");
-        handleInputServerRpc(_input);
+        handleInputServerRpc(psm.attachedUnit.input_Axis);
     }
 
     [Rpc(SendTo.Server)]

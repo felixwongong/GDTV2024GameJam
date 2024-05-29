@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -44,5 +46,25 @@ public class BattleController : NetworkBehaviour
     public void registerUnit(Unit unit)
     {
         _unitMap.Add(unit.id, unit);
+
+        if (IsServer)
+        {
+            distributeUnitTeam();
+        }
+    }
+
+    private void distributeUnitTeam()
+    {
+        foreach (var (_, unit) in _unitMap)
+        {
+            if (unit._team.Value != UnitTeam.None) continue;
+            var teams = (UnitTeam[])Enum.GetValues(typeof(UnitTeam));
+            foreach (var team in teams)
+            {
+                if (_unitMap.Values.Any(u => u._team.Value == team)) continue;
+                unit._team.Value = team;
+                break;
+            }
+        }
     }
 }
