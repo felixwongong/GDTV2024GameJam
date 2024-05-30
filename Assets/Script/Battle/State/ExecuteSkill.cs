@@ -14,11 +14,12 @@ namespace Otter.MonsterChess.Core.State
             var playerSM = (PlayerStateMachine)stateMachine;
 
             var skill = Instantiate(playerSM.skill, transform.position, Quaternion.identity);
-
-
-            stateMachine.GoToState(PlayerStateId.Movement);
+            skill.gameObject.SetActive(false);
+            
             UnityTimeScheduler.instance.AddDelay(skill.castBackswingSecond * 1000, () =>
             {
+                skill.gameObject.SetActive(true);
+                stateMachine.GoToState(PlayerStateId.Movement);
                 CoroutineExecutor.instance.execute(
                     skill.execute(new SkillExecutionRequest()
                     {
