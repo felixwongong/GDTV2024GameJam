@@ -27,6 +27,13 @@ public class TopDownMovement : PlayerState
         Debug.Log("Start movement state");
     }
 
+    protected override void OnEndContext()
+    {
+        base.OnEndContext();
+        _rb.velocity = Vector3.zero;
+    }
+
+
     public override void _Awake()
     {
         base._Awake();
@@ -76,9 +83,11 @@ public class TopDownMovement : PlayerState
         this._velocity = _velocity;
         Debug.Log($"isOwner: {IsOwner}, velocity: {_velocity}");
     }
-
-    private void FixedUpdate()
+    
+    public override void _FixedUpdate(double fixedDelta)
     {
+        base._FixedUpdate(fixedDelta);
+        
         if (IsServer)
         {
             if(_rotation != quaternion.identity) _rb.rotation = _rotation;

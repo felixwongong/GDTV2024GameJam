@@ -93,6 +93,7 @@ GameObject:
   m_Component:
   - component: {fileID: 325709770248880055}
   - component: {fileID: 589568684575484226}
+  - component: {fileID: -4710717887318830733}
   m_Layer: 0
   m_Name: Bomb
   m_TagString: Untagged
@@ -132,3 +133,17 @@ MonoBehaviour:
   _hitVfxPrefab: {fileID: 0}
   effectArea: {fileID: 11400000, guid: a5e6a80c6d2f97d4984fab63bf7ae8f2, type: 2}
   scaledDuration: 0
+  castBackswingSecond: 1
+--- !u!114 &-4710717887318830733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8917148588437676430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40f08ac2b9402b9459105f8b7359ee83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  second: 1

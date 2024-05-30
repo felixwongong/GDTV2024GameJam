@@ -33,7 +33,7 @@ namespace CofyEngine.Network
             OnEndContext();
         }
         
-        private protected virtual void OnEndContext()
+        protected virtual void OnEndContext()
         {
             
         }

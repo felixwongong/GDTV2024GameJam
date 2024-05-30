@@ -1,11 +1,7 @@
+using System.Collections;
 using Otter.MonsterChess.Core;
 using Otter.MonsterChess.Skill;
 using UnityEngine;
-
-	public struct SkillStatus
-	{
-		public float duration;
-	}
 
 	public struct SkillExecutionRequest
 	{
@@ -21,8 +17,28 @@ using UnityEngine;
 		[SerializeField] private ParticleSystem _hitVfxPrefab;
 		[SerializeField] private AxialArea effectArea;
 		[SerializeField] private float scaledDuration;
+		public float castBackswingSecond = 0f;
+
+		private DelayExecuteModifier[] delayModifiers;
+
+		private void Awake()
+		{
+			delayModifiers = GetComponents<DelayExecuteModifier>();
+		}
+
+		public IEnumerator execute(SkillExecutionRequest req)
+		{
+			foreach (var delay in delayModifiers)
+			{
+				yield return new WaitForSeconds(delay.second);
+			}
+
+			_executeArea(req);
+
+			yield return new WaitForSeconds(getScaledDuration());
+		}
 		
-		public SkillStatus execute(SkillExecutionRequest req)
+		private void _executeArea(SkillExecutionRequest req)
 		{
 			var mapData = TileManager.instance._tilemapData;
 			
@@ -45,11 +61,6 @@ using UnityEngine;
 				_executeCellInArea(singleReq);
 				if (_hitVfxPrefab != null) playVfxOn(getVfx(_hitVfxPrefab), area[i], mapData);
 			}
-
-			return new SkillStatus()
-			{
-				duration = getScaledDuration()
-			};
 		}
         
 		protected abstract void _executeCellInArea(SkillExecutionRequest req);
@@ -67,8 +78,8 @@ using UnityEngine;
 			return Instantiate(prefab);
 		}
 	
-		void recycle(ParticleSystem ps) {
-			Destroy(ps);
+		public void recycle() {
+			Destroy(this.gameObject);
 		}
 
 		protected virtual float getScaledDuration()
