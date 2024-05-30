@@ -1,4 +1,5 @@
 using System.Linq;
+using Script.UI.Component;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -21,6 +22,11 @@ public class Unit : NetworkBehaviour
     [SerializeField] private Vector2 _input_Axis;
 
     public Vector2 input_Axis => _input_Axis;
+    //
+    
+    //UI
+    public HpBarElement hpBar;
+    public ProgressBarElement progressBar;
     //
     
     private PlayerStateMachine _psm;

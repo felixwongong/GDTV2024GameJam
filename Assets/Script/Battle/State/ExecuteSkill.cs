@@ -12,6 +12,7 @@ namespace Otter.MonsterChess.Core.State
         protected override void StartContext()
         {
             var playerSM = (PlayerStateMachine)stateMachine;
+            var unit = playerSM.attachedUnit;
 
             var skill = Instantiate(playerSM.skill, transform.position, Quaternion.identity);
             skill.gameObject.SetActive(false);
@@ -29,6 +30,9 @@ namespace Otter.MonsterChess.Core.State
                             .axial()
                     }),
                     () => { skill.recycle(); });
+            }, percent =>
+            {
+                unit.progressBar.setFill(percent);
             });
         }
     }
