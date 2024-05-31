@@ -32,7 +32,7 @@ namespace Otter.MonsterChess.Core.State
                     () => { skill.recycle(); });
             }, percent =>
             {
-                unit.progressBar.setFill(percent);
+                unit.progressBar.setFill(1 - percent);
             });
         }
     }
