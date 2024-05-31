@@ -1,51 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CofyEngine
 {
     public class MainThreadExecutor : MonoInstance<MainThreadExecutor>, IDisposable
     {
+        public delegate void CancelAction();
         public override bool persistent => true;
 
-        private Queue<Action> _actionQueue;
-        private List<Action> _actionPersistent;
-        
-        protected override void Awake()
-        {
-            base.Awake();
-            _actionQueue = new Queue<Action>();
-            _actionPersistent = new List<Action>();
-        }
+        private Queue<WeakReference<Action>> _actionQueue = new();
+        private List<WeakReference<Action>> _actionPersistent = new();
 
+        private Action _cache;
         public void OnUpdate()
         {
-            for (var i = 0; i < _actionPersistent.Count; i++)
+            for (var i = _actionPersistent.Count - 1; i > 0; i--)
             {
-                _actionPersistent[i]();
+                var wr = _actionPersistent[i];
+                if (!wr.TryGetTarget(out _cache))
+                    _actionPersistent.RemoveAt(i);
+                else
+                    _cache.Invoke();
             }
 
             while (_actionQueue.Count > 0)
             {
-                try
-                {
-                    var action = _actionQueue.Dequeue();
-                    action();
-                }
-                catch (Exception ex)
-                {
-                    FLog.LogException(new Exception("Exception occurs in Main Thread", ex));
-                }
+                var wr = _actionQueue.Dequeue();
+                if (wr.TryGetTarget(out _cache))
+                    _cache();
             }
         }
 
         public void QueueAction(in Action action)
         {
-            _actionQueue.Enqueue(action);
+            _actionQueue.Enqueue(new WeakReference<Action>(action));
         }
         
-        public void QueueUpdate(in Action action)
+        public CancelAction QueueUpdate(in Action action)
         {
-            _actionPersistent.Add(action);
+            var wr = new WeakReference<Action>(action);
+            _actionPersistent.Add(wr);
+
+            return () => wr.SetTarget(null);
         }
 
         public void Dispose()
