@@ -30,7 +30,7 @@ using UnityEngine;
 		{
 			foreach (var delay in delayModifiers)
 			{
-				yield return new WaitForSeconds(delay.second);
+				yield return delay.wait();
 			}
 
 			_executeArea(req);

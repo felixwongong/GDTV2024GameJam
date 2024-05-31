@@ -1,4 +1,5 @@
 ﻿using System;
+using CofyEngine;
 using UnityEngine;
 
 namespace Script.UI.Component
@@ -6,6 +7,14 @@ namespace Script.UI.Component
     public class ProgressBarElement: MonoBehaviour
     {
         [SerializeField] private RectTransform fill;
+
+        private void setProgress(IPercentPrgress progress)
+        {
+            MainThreadExecutor.instance.QueueUpdate(() =>
+            {
+                this.setFill(progress.getProgress());
+            });
+        }
 
         public void setFill(float percent)
         {
