@@ -17,7 +17,11 @@ public class HexTile : MonoBehaviour
 
     private void Start()
     {
-        TileManager.instance.registerTile(this, coord => _coord = coord);
+        TileManager.instance.registerTile(this, coord =>
+        {
+            _coord = coord;
+            this.gameObject.name = _coord.ToString();
+        });
         
         foreach (var tile in tiles)
         {

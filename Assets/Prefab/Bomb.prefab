@@ -131,7 +131,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _emitVfxPrefab: {fileID: 2433282508523890284, guid: 012579b4b99b7014abb8edb6215a78bd, type: 3}
   _hitVfxPrefab: {fileID: 0}
-  effectArea: {fileID: 11400000, guid: a5e6a80c6d2f97d4984fab63bf7ae8f2, type: 2}
+  effectArea: {fileID: 11400000, guid: 05ef8f9ab8cee094ab9118995312ed3c, type: 2}
   scaledDuration: 0
   castBackswingSecond: 1
 --- !u!114 &-4710717887318830733
@@ -146,4 +146,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40f08ac2b9402b9459105f8b7359ee83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  second: 1
