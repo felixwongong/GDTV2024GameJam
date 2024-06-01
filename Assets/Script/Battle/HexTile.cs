@@ -1,14 +1,19 @@
 using System.Collections.Generic;
+using System.Linq;
+using Script.Core;
 using UnityEngine;
 
 public class HexTile : MonoBehaviour
 {
+    [SerializeField] private TeamProperties _teamProperties;
     [SerializeField] private AxialCoord _coord;
     [SerializeField] private UnitTeam _team;
     [SerializeField] private List<GameObject> tiles;
 
     private Unit occupiedUnit;
     public UnitTeam team => _team;
+    
+    private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
 
     private void Start()
     {
@@ -40,5 +45,10 @@ public class HexTile : MonoBehaviour
         }
         
         toTile.gameObject.SetActive(true);
+        _team = to;
+        var tileMaterial = toTile.GetComponentInChildren<MeshRenderer>().material;
+        var property = _teamProperties.properties.Find(property => property.team == _team);
+        if(property != null) 
+            tileMaterial.SetColor(EmissionColor, property.color);
     }
 }

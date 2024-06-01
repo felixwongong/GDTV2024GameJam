@@ -1,7 +1,8 @@
-using System.Linq;
+using Script.Core;
 using Script.UI.Component;
 using Unity.Netcode;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public enum UnitTeam: int
 {
@@ -12,8 +13,12 @@ public enum UnitTeam: int
     Last,
 }
 
-public class Unit : NetworkBehaviour 
+public class Unit : NetworkBehaviour
 {
+    [SerializeField] private TeamProperties _teamProperties;
+    [SerializeField] private SkinnedMeshRenderer unitMesh;
+    [SerializeField] private Light light;
+    
     public int id;
     public NetworkVariable<UnitTeam> _team = new(UnitTeam.None);
     public UnitTeam team => _team.Value; 
@@ -30,12 +35,15 @@ public class Unit : NetworkBehaviour
     //
     
     private PlayerStateMachine _psm;
-    
+    private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
+
     private void Awake()
     {
         id = Random.Range(0, 100);
         _psm = GetComponent<PlayerStateMachine>();
         _psm.setUnit(this);
+
+        light = GetComponentInChildren<Light>();
     }
 
     private void Start()
@@ -61,5 +69,17 @@ public class Unit : NetworkBehaviour
         var yAxis = Input.GetAxis("Vertical");
 
         _input_Axis =  new Vector2(xAxis, yAxis);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void assignTeamRpc(UnitTeam team)
+    {
+        this._team.Value = team;
+        var property = _teamProperties.properties.Find(property => property.team == team);
+        if (property != null)
+        {
+            unitMesh.materials[1].color = property.color;
+            light.color = property.color;
+        }
     }
 }

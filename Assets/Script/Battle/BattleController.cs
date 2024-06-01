@@ -62,7 +62,7 @@ public class BattleController : NetworkBehaviour
             foreach (var team in teams)
             {
                 if (_unitMap.Values.Any(u => u._team.Value == team)) continue;
-                unit._team.Value = team;
+                unit.assignTeamRpc(team);
                 break;
             }
         }
